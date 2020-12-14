@@ -5,7 +5,7 @@ A quick and easy way to setup your PHP application using Docker and docker-compo
 ## Usage
 
 ```
-git clone git@github.com:shameerc/docker-php7.git
+git clone git@github.com:andreshg112/docker-php7-ssl.git
 cd docker-php7
 docker-compose up
 ```
