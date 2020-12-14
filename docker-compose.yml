@@ -1,26 +1,32 @@
 version: "2"
 services:
   nginx:
-      build:
-          context: ./nginx
-      ports:
-          - "8080:80"
-      volumes:
-          - ./app:/var/app
+    build:
+      context: ./nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/app
   fpm:
-      build:
-          context: ./fpm
-      volumes:
-          - ./app:/var/app
-      expose:
-          - "9000"
-      environment:
-          - "DB_HOST=db"
-          - "DB_DATABASE=laravel"
+    build:
+      context: ./fpm
+    volumes:
+      - ./app:/var/app
+      - ./ssl:/etc/ssl/newcerts # The folder is newcerts to avoid replacing default SSL files in fpm
+    expose:
+      - "9000"
+    environment:
+      - "DB_HOST=db"
+      - "DB_DATABASE=laravel"
   db:
-      image: mariadb
-      environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_DATABASE=laravel
-      volumes:
-          - ./database:/var/lib/mysql
+    image: mariadb:10.4.12
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=laravel
+    volumes:
+      - ./database:/var/lib/mysql
+      - ./ssl:/etc/mysql/ssl # To use the same files as fpm
+      - ./config/mariadb.cnf:/etc/mysql/mariadb.cnf # To configure SSL in MariaDB server
+      - ./config/50-mysql-clients.cnf:/etc/mysql/mariadb.conf.d/50-mysql-clients.cnf # To configure SSL in MySQL client
